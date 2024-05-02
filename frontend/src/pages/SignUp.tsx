@@ -3,11 +3,14 @@ import logo from './../assets/logo.jpg'
 import { Button, FloatingLabel } from 'flowbite-react'
 import { Link} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { useQuery } from 'react-query'
+import * as apiClient from '../api-client'
 
 export type RegisterFormData = {
   firstName: string
   lastName: string
   email: string
+  displayName: string
   password: string
   confirmPassword: string
 }
@@ -19,6 +22,7 @@ const SignUp = () => {
     watch,
     formState: { errors },
   } = useForm<RegisterFormData>()
+
 
 
   return (
@@ -75,6 +79,31 @@ const SignUp = () => {
               />
               {errors.email && (
                 <span className="text-red-500">{errors.email.message}</span>
+              )}
+            </div>
+            <div className="mt-5">
+              <FloatingLabel
+                className="text-white bg-black"
+                type="email"
+                label="Email"
+                variant="outlined"
+                {...register('displayName', { required: 'This field is required', minLength: {
+                  value: 2,
+                  message: 'At least 2 characters is required.',
+                  },
+                  validate: async(val) => {
+                    const { data: existingUser } = useQuery(
+                      'checkDisplayNameExists',
+                      await apiClient.checkDisplayNameExists(val)
+                    )
+                    if (existingUser) {
+                      return 'Display name already taken, choose another'
+                    }
+                  }
+                })}
+              />
+              {errors.displayName && (
+                <span className="text-red-500">{errors.displayName.message}</span>
               )}
             </div>
             <div className="mt-5">
