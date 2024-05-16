@@ -9,12 +9,6 @@ router.post('/register', [
     check('firstName', 'First name required').isString(),
     check('lastName', 'Last name is required').isString(),
     check('email', 'Email is required').isEmail(),
-    check('displayName').notEmpty().withMessage('Display name is required').isString().withMessage('Display name must be a string').custom(( async (value, { req }) => {
-        const existingUser = await User.findOne({ displayName: value });
-        if (existingUser) {
-            throw new Error('Display name already exists')
-        }
-    })),
     check('password', 'Password is required and must be > 6').isLength({
         min: 6
     })
@@ -41,7 +35,7 @@ router.post('/register', [
             secure: process.env.NODE_ENV === 'production',
             maxAge: 86400000,
         })
-        return res.sendStatus(200)
+        return res.status(200).json({ message: 'Success' })
     } catch (error) {
         console.log(error)
         res.status(500).send({ message: 'Something went wrong'})

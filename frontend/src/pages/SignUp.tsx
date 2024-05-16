@@ -1,10 +1,13 @@
-import logo from './../assets/logo.jpg'
+
 
 import { Button, FloatingLabel } from 'flowbite-react'
-import { Link} from 'react-router-dom'
+import { Link, useNavigate} from 'react-router-dom'
 import { useForm } from 'react-hook-form'
-import { useQuery } from 'react-query'
+import { useMutation, useQueryClient} from 'react-query'
 import * as apiClient from '../api-client'
+import Loader from '../components/Loader'
+import { useAppContext } from '../context/AppContext'
+
 
 export type RegisterFormData = {
   firstName: string
@@ -16,31 +19,47 @@ export type RegisterFormData = {
 }
 
 const SignUp = () => {
-
+  const { showToast } = useAppContext()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const {
     register,
     watch,
     formState: { errors },
+    handleSubmit
   } = useForm<RegisterFormData>()
 
+  const { mutate, isLoading } = useMutation(apiClient.register, {
+    onSuccess: async () => {
+      showToast({message:'Registration successful', type:'SUCCESS'});
+      await queryClient.invalidateQueries('validateToken')
+      navigate('/')
+      
+    },
+    onError: (error: Error) => {
+      showToast({message: error.message, type:'ERROR'});
+      
+    }
+  })
 
+  const onSubmit = handleSubmit((data) => {
+    mutate(data)
+  })
+  
+  {/*const { data: existingUser } = useQuery('checkDisplayNameExists', () =>
+  apiClient.checkDisplayNameExists(val))*/}
+
+
+ if (isLoading) {
+  return <Loader/>
+ }
 
   return (
-    <div className="min-h-screen mt-20">
+    <div className="min-h-screen mt-20 p-10">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center max-lg:p-3">
-        <div className="flex-1">
-          <Link to="/" className="sm:text-xl font-bold dark:text-white">
-            <span className="px-4 py-1 rounded text-bold text-4xl text-white">
-              <img src={logo} alt="Logo" />
-            </span>
-          </Link>
-          <p className="mt-3 text-sm text-white">
-            Where Your song gets maximum attention...
-          </p>
-        </div>
         <div className="md:mx-5 flex-1">
-          <form>
-            <h2 className="mt-5 text-3xl text-bold text-white">Sign Up</h2>
+          <form onSubmit={onSubmit}>
+            <h2 className="mt-5 text-3xl text-bold text-white text-center">Sign Up</h2>
             <div className="mt-5">
               <FloatingLabel
                 className="text-white bg-black"
@@ -81,21 +100,17 @@ const SignUp = () => {
                 <span className="text-red-500">{errors.email.message}</span>
               )}
             </div>
-            <div className="mt-5">
+           {/* <div className="mt-5">
               <FloatingLabel
                 className="text-white bg-black"
-                type="email"
-                label="Email"
+                type="text"
+                label="Music name (Display name)"
                 variant="outlined"
                 {...register('displayName', { required: 'This field is required', minLength: {
                   value: 2,
                   message: 'At least 2 characters is required.',
                   },
-                  validate: async(val) => {
-                    const { data: existingUser } = useQuery(
-                      'checkDisplayNameExists',
-                      await apiClient.checkDisplayNameExists(val)
-                    )
+                  validate: () => {
                     if (existingUser) {
                       return 'Display name already taken, choose another'
                     }
@@ -106,6 +121,7 @@ const SignUp = () => {
                 <span className="text-red-500">{errors.displayName.message}</span>
               )}
             </div>
+            */}
             <div className="mt-5">
               <FloatingLabel
                 className="text-white bg-black"

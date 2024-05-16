@@ -1,26 +1,28 @@
 import { BrowserRouter, Routes, Navigate, Route } from 'react-router-dom'
-import SideBarNav from './components/SideBarNav'
-import NavBar from './components/NavBar'
 import SignUp from './pages/SignUp'
 import SignIn from './pages/SignIn'
+import { DarkThemeToggle, Flowbite } from 'flowbite-react'
+import Sidebar from './components/Sidebar'
+import Dashboard from './components/Dashboard'
+import { useState } from 'react'
 
 function App() {
+  const [sidebarToggle, setSidebarToggle] = useState<boolean>(false)
   return (
-    <div className="">
+    <Flowbite>
       <BrowserRouter>
-        <div className="flex gap-4">
-          <SideBarNav />
-          <div className="ml-[11%] w-full">
-            <NavBar />
-          </div>
+        <div className='flex'>
+          <Sidebar sidebarToggle={sidebarToggle} />
+          <Dashboard sidebarToggle={sidebarToggle} setSidebarToggle={setSidebarToggle} />
         </div>
+
         <Routes>
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
-    </div>
+    </Flowbite>
   )
 }
 

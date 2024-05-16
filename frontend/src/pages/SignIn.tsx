@@ -1,8 +1,10 @@
-import logo from './../assets/logo.jpg'
-
 import { Button, FloatingLabel } from 'flowbite-react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
+import { useMutation, useQueryClient } from 'react-query'
+import * as apiClient from './../api-client'
+import { useAppContext } from '../context/AppContext'
+import Loader from '../components/Loader'
 
 export type LoginFormData = {
   email: string
@@ -12,25 +14,42 @@ export type LoginFormData = {
 const SignIn = () => {
   const {
     register,
+    handleSubmit,
     formState: { errors },
   } = useForm<LoginFormData>()
 
+  const { showToast } = useAppContext()
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const { mutate, isLoading} = useMutation(apiClient.SignIn, {
+    onSuccess: async () => {
+      showToast({ message: 'Login successful', type: 'SUCCESS' })
+      await queryClient.invalidateQueries('validateToken')
+      navigate('/')
+    },
+    onError: async (error: Error) => {
+      showToast({ message: error.message, type: 'ERROR' })
+    },
+  })
+
+  const onSubmit = handleSubmit((data) => {
+    mutate(data)
+  })
+
+  if (isLoading) {
+    return <Loader />
+  }
+
+
   return (
-    <div className="min-h-screen mt-20">
+    <div className="min-h-screen mt-20 p-10">
       <div className="flex p-3 max-w-3xl mx-auto flex-col md:flex-row md:items-center max-lg:p-3">
-        <div className="flex-1">
-          <Link to="/" className="sm:text-xl font-bold dark:text-white">
-            <span className="px-4 py-1 rounded text-bold text-4xl text-white">
-              <img src={logo} alt="Logo" />
-            </span>
-          </Link>
-          <p className="mt-3 text-sm text-white">
-            Where Your song gets maximum attention...
-          </p>
-        </div>
         <div className="md:mx-5 flex-1">
-          <form>
-            <h2 className="mt-5 text-3xl text-bold text-white">Sign In</h2>
+          <form onSubmit={onSubmit}>
+            <h2 className="mt-5 text-3xl text-center text-bold text-white">
+              Sign In
+            </h2>
             <div className="mt-5">
               <FloatingLabel
                 className="text-white bg-black"

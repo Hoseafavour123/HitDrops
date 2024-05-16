@@ -3,6 +3,7 @@ import User from '../models/user'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcryptjs'
 import { check, validationResult } from 'express-validator'
+import verifyToken from '../middleware/auth'
 
 const router = express.Router()
 
@@ -32,7 +33,7 @@ router.post(
       }
       const token = jwt.sign(
         { userId: user.id },
-        process.env.SECRET_KEY as string,
+        process.env.JWT_SECRET as string,
         { expiresIn: '1d' }
       )
       res.cookie('auth_token', token, {
@@ -49,7 +50,18 @@ router.post(
 )
 
 
-router.get('/displayName/:displayName', async(req: Request, res: Response) => {
+router.get('/validate-token', verifyToken, (req: Request, res: Response) => {
+  res.status(200).send({ userId: req.userId})
+})
+
+router.post('/logout', (req: Request, res: Response) => {
+  res.cookie('auth_token', '', {
+    expires: new Date(0),
+  });
+  res.send()
+})
+
+{/*router.get('/displayName/:displayName', async(req: Request, res: Response) => {
     try {
         let existingName = await User.findOne({ displayName: req.params.displayName })
         res.json({ exists: !!existingName})
@@ -59,5 +71,6 @@ router.get('/displayName/:displayName', async(req: Request, res: Response) => {
         res.status(500).json({ message: 'Something went wrong'})
         
     }
-})
+})*/}
+
 export default router
