@@ -7,6 +7,13 @@ import authRoutes from './routes/auth'
 import albumRoutes from './routes/album'
 import songRoutes from './routes/song'
 import cookieParser from 'cookie-parser'
+import { v2 as cloudinary } from 'cloudinary'
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
 
 mongoose.connect(process.env.MONGO_URI as string)
 
@@ -23,7 +30,7 @@ app.use(cors({
 app.use('/api/auth', authRoutes)
 app.use('/api/users', userRoutes)
 
-app.use('/api/albums', albumRoutes)
+app.use('/api/album', albumRoutes)
 app.use('/api/song', songRoutes)
 app.listen(7000, () => {
     console.log('App listening on port 7000');
