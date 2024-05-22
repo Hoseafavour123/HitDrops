@@ -43,7 +43,7 @@ router.post(
     const files = req.files as { [fieldname: string]: Express.Multer.File[] }
     const imageFile = files['image'][0]
     const audioFile = files['audio'][0]
-    const { name, language, category } = req.body
+    const { name, language, category, downloadable, availability, lyrics } = req.body
 
      try {
       //upload image
@@ -78,6 +78,9 @@ router.post(
         name,
         language,
         category,
+        downloadable: Boolean(downloadable),
+        availability,
+        lyrics,
         imageInfo: imageResult,
         songInfo: audioResult
        })

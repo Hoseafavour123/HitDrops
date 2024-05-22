@@ -8,6 +8,9 @@ export type SongType = {
   album: string
   category: string
   language: string
+  availability: string
+  downloadable: boolean
+  lyrics: string
 }
 
 const songSchema = new mongoose.Schema<SongType>(
@@ -25,6 +28,9 @@ const songSchema = new mongoose.Schema<SongType>(
     album: { type: String, required: false },
     category: { type: String, required: true },
     language: { type: String, required: true },
+    availability: { type: String, enum: ['public', 'private'], required: true },
+    downloadable: { type: Boolean, required: true },
+    lyrics: { type: String, required: false },
   },
   { timestamps: true }
 )
