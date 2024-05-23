@@ -24,6 +24,15 @@ router.get('/', async (req: Request, res: Response) => {
   }
 })
 
+router.get('/user', verifyToken, async (req: Request, res: Response) => {
+  try {
+    const songs = await Song.find({ userId: req.userId })
+    res.json(songs)
+  } catch (error) {
+    console.log(error)
+     return res.status(500).json({ messsage: 'Error fetching songs' })
+  }
+})
 router.post(
   '/upload',
   verifyToken,

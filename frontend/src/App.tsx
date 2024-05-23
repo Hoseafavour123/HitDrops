@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard'
 import { useState } from 'react'
 import { useAppContext } from './context/AppContext'
 import UploadForm from './components/UploadForm'
+import MySongs from './pages/MySongs'
 
 function App() {
   const [sidebarToggle, setSidebarToggle] = useState<boolean>(false)
@@ -26,6 +27,7 @@ function App() {
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           {isLoggedIn && <Route path="/upload" element={<UploadForm />} />}
+          {isLoggedIn && <Route path="/my-songs" element={<MySongs />} />}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>

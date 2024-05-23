@@ -12,6 +12,19 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 */
 }
 
+export type SongType = {
+  userId: string
+  name: string
+  imageInfo: { url: string; id: string }
+  songInfo: { url: string; id: string }
+  album: string
+  category: string
+  language: string
+  availability: string
+  downloadable: boolean
+  lyrics: string
+}
+
 
 export const register = async (formData: RegisterFormData) => {
   const response = await fetch(`${API_BASE_URL}/api/users/register`, {
@@ -75,6 +88,17 @@ export const UploadSong = async (formData: FormData) => {
   if (!response.ok) {
     console.log(response)
     throw new Error('Failed to upload files')
+  }
+  return response.json()
+}
+
+export const getMySongs = async (): Promise<SongType[]> => {
+  const response = await fetch(`${API_BASE_URL}/api/song/user`, {
+    credentials: 'include'
+  })
+   if (!response.ok) {
+    console.log(response)
+    throw new Error('Failed Get Songs')
   }
   return response.json()
 }
