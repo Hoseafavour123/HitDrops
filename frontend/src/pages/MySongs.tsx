@@ -12,34 +12,26 @@ const MySongs = () => {
   const audioElem = useRef<HTMLAudioElement | null>(null)
   const [progress, setProgress] = useState<number>(0)
   const [duration, setDuration] = useState<number>(0)
- // const [currentTime, setCurrentTime] = useState<number>()
+  // const [currentTime, setCurrentTime] = useState<number>()
 
-  const { data: songs, isLoading } = useQuery(
-    'getMySongs',
-    apiClient.getMySongs,
-    {
-      onSuccess: () => {
-        console.log(songs)
-      },
-    }
-  )
-  useEffect(() => {
-    if (songs) {
-      setMySongs(songs)
-      setCurrentSong(songs[0])
-    }
-  }, [])
+  const { data: songs } = useQuery('getMySongs', apiClient.getMySongs, {
+    onSuccess: (songs) => {
+        if (songs) {
+          setMySongs(songs)
+          setCurrentSong(songs[0])
+        }
+    },
+  })
 
-  useEffect(() => {
-    if (isPlaying) {
-      audioElem.current?.play()
-    } else {
-      audioElem.current?.pause()
-    }
-  }, [isPlaying, currentSong])
+    useEffect(() => {
+      if (isPlaying) {
+        audioElem.current?.play()
+      } else {
+        audioElem.current?.pause()
+      }
+    }, [isPlaying, currentSong, songs])
+  
 
-
- 
   const onPlaying = () => {
     const duration = audioElem.current?.duration
     const currentTime = audioElem.current?.currentTime
@@ -50,13 +42,13 @@ const MySongs = () => {
     }
   }
 
-  if (isLoading || !songs) {
+  if (!songs) {
     return <Loader />
   }
-
   return (
     <div>
-      {songs && songs.length > 0 && (
+      <img src={songs[2].songInfo.url} height={100} width={100} alt="" />
+      {songs.length > 0 && (
         <audio
           src={currentSong?.songInfo.url}
           ref={audioElem}
@@ -66,7 +58,7 @@ const MySongs = () => {
       {songs && currentSong && (
         <Player
           song={currentSong}
-          songs={songs}
+          songs={mySongs}
           setSongs={setMySongs}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}

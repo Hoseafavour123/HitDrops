@@ -1,4 +1,5 @@
 import { SongType } from '../api-client'
+import { useEffect } from 'react'
 import {
   Dispatch,
   MutableRefObject,
@@ -37,6 +38,8 @@ const Player = ({
   duration,
 }: props) => {
   const clickRef = useRef<HTMLInputElement | null>(null)
+
+ 
 
   const checkWidth = (e: MouseEvent<HTMLInputElement>) => {
     let width = clickRef.current?.clientWidth
@@ -91,26 +94,38 @@ const Player = ({
       const secs = Math.floor(seconds % 60)
       return `${minutes}: ${secs < 10 ? '0' : ''}${secs}`
    }
+   console.log(song.songInfo)
 
 
   return (
     <div className="container mx-auto bg-black mt-10 p-3 md:w-full md:absolute bottom-0 left-64">
       <p className="text-gray-300 flex justify-center m-1">{song?.name}</p>
-      {audioElem.current?.currentTime  && (
+      {audioElem.current?.currentTime && (
         <p className="text-white">
           {formatTime(audioElem.current?.currentTime)}
         </p>
-      ) }
+      )}
+      <div className="flex justify-center gap-4">
+        <div className=''>
+          <img
+            src={song.imageInfo.url}
+            alt={song.name}
+            width={150}
+            height={150}
+          />
+        </div>
 
-      <input
-        type="range"
-        min="0"
-        max="100"
-        className="w-full cursor-pointer"
-        value={progress}
-        onClick={checkWidth}
-        ref={clickRef}
-      />
+        <input
+          type="range"
+          min="0"
+          max="100"
+          className="w-full cursor-pointer"
+          value={progress}
+          onClick={checkWidth}
+          ref={clickRef}
+        />
+      </div>
+
       <div className="flex text-gray-200 justify-center gap-4 mt-2">
         <BsFillSkipStartCircleFill
           className="h-10 w-10 hover:opacity-50 cursor-pointer"
