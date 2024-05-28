@@ -4,6 +4,7 @@ import { SongType } from '../api-client'
 import * as apiClient from '../api-client'
 import Loader from '../components/Loader'
 import { useEffect, useRef, useState } from 'react'
+import { BsFillPlayCircleFill, BsFillStopCircleFill } from 'react-icons/bs'
 
 const MySongs = () => {
   const [mySongs, setMySongs] = useState<SongType[]>([])
@@ -42,12 +43,51 @@ const MySongs = () => {
     }
   }
 
+  const handlePlayBtn = (index: number) => {
+    {songs && setCurrentSong(songs[index])}
+    if (!isPlaying) {
+      setIsPlaying(true)
+    }
+   
+  }
+
+  const handlePauseBtn = (index: number ) => {
+   setIsPlaying(!isPlaying)
+  }
+
   if (!songs) {
     return <Loader />
   }
   return (
-    <div>
-      <img src={songs[2].songInfo.url} height={100} width={100} alt="" />
+    <div className="mt-10">
+      <div className="container mx-auto flex flex-col">
+        <h1 className="text-3xl text-gray-300 "> My Songs </h1>
+        {songs.map((song, index) => (
+          <div className={`${currentSong === songs[index] ? "bg-gray-900": ''} flex gap-2 m-3 p-3 relative`}>
+            <img src={song.imageInfo.url} height={100} width={100} alt="" />
+            <div className="flex flex-col">
+              <h1 className="text-xl text-gray-200">{song.name}</h1>
+              <small className="text-sm text-gray-300">{song.category}</small>
+            </div>
+            {currentSong === songs[index] && (
+              <div className="text-white">
+                <BsFillStopCircleFill
+                  className="text-black w-10 h-10 absolute left-0 hover:opacity-40 cursor-pointer"
+                  onClick={() => handlePauseBtn(index)}
+                />
+              </div>
+            )}
+            {currentSong !== songs[index] && (
+              <div>
+                <BsFillPlayCircleFill
+                  className="text-black w-10 h-10 absolute left-0 hover:opacity-40 cursor-pointer"
+                  onClick={() => handlePlayBtn(index)}
+                />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
       {songs.length > 0 && (
         <audio
           src={currentSong?.songInfo.url}
